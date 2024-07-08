@@ -10,8 +10,8 @@ const Header: FC = () => {
           <a href="#">TodoList</a>{' '}
           <span>
             Powered by{' '}
-            <a href="https://github.com/RomSmile" target="_blank" rel="noreferrer">
-              RomSmile
+            <a href="https://github.com/Vampi090" target="_blank" rel="noreferrer">
+              Vampi090
             </a>
           </span>
         </h1>
