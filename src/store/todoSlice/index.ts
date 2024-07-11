@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { ITodoItem } from "@/types"
-import { createTodo, getTodos, updateTodoItem } from "./actions"
+import { createTodo, deleteTodoItem, getTodos, updateTodoItem } from "./actions"
 import {toast} from "react-toastify";
 
 
@@ -79,6 +79,24 @@ export const TodoSlice = createSlice({
 
 
     builder.addCase(updateTodoItem.rejected, (state: IInitialState, action) => {
+      state.error = action.payload as unknown as string;
+      state.loading = false;
+    })
+
+    //delete
+
+    builder.addCase(deleteTodoItem.pending, (state: IInitialState) => {
+      state.loading = true
+    })
+
+    builder.addCase(deleteTodoItem.fulfilled, (state: IInitialState, action: PayloadAction<ITodoItem[]>) => {
+      const { payload } = action;
+      state.todos = [ ...payload ];
+      state.loading = false;
+      state.error = '';
+    })
+
+    builder.addCase(deleteTodoItem.rejected, (state: IInitialState, action) => {
       state.error = action.payload as unknown as string;
       state.loading = false;
     })

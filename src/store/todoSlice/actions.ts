@@ -28,13 +28,13 @@ export const createTodo = createAsyncThunk<
     const response = await axios.post(`${document.location.href}api/todos`, {
       ...params,
       id: id <= 0 ? id * -1 : id,
-      status: TodoStatusEnum.notFinished 
+      status: TodoStatusEnum.todo 
     })
 
     return { status: response.status, message: "success", todoItem: {
       ...params,
       id: id <= 0 ? id * -1 : id,
-      status: TodoStatusEnum.notFinished 
+      status: TodoStatusEnum.todo 
     }}
   } catch (e: any) {
     return rejectWithValue(e.response.data.message);
@@ -52,6 +52,28 @@ export const updateTodoItem = createAsyncThunk<
     })
 
     return { todoItem: response.data as ITodoItem }
+  } catch (e: any) {
+    return rejectWithValue(e.response.data.message);
+  }
+})
+
+export const deleteTodoItem = createAsyncThunk<
+  ITodoItem[],
+  { id: number },
+  { rejectValue: string }
+>("deleteTodo", async (params, { rejectWithValue }) => {
+  try {
+    const response = await axios.delete(`${document.location.href}api/todos/${params.id}`)
+
+    if (response.status === 204) {
+      const response: { data: ITodoItem[] } = await axios.get(
+        `${document.location.href}api/todos`,
+      );
+
+      return response.data;
+    } else {
+      return rejectWithValue("something went wrong");
+    }
   } catch (e: any) {
     return rejectWithValue(e.response.data.message);
   }

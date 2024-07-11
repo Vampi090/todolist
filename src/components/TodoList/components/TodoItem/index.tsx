@@ -1,25 +1,30 @@
 import { FC } from "react"
-import { Button, Switch } from "antd"
+import { Button, Select } from "antd"
+import { DeleteOutlined } from '@ant-design/icons';
 import { EditOutlined } from '@ant-design/icons'
 import { ITodoItemComponent } from "./types"
 import { TodoStatusEnum } from "@/types"
 import { useAppDispatch } from "@/hooks/redux"
 import { TodoItemViewMode } from "@/components/TodoList/types"
+import { deleteTodoItem, updateTodoItem } from "@/store/todoSlice/actions"
 import './style.scss'
-import { updateTodoItem } from "@/store/todoSlice/actions"
 
 const TodoItem: FC<ITodoItemComponent> = ({ title, text, status, setOpenModal, id}) => {
   const dispatch = useAppDispatch()
 
-  const changeStatus = (): void => {
+  const changeStatus = (value: TodoStatusEnum): void => {
     dispatch(updateTodoItem({
       todoItem: {
         title,
         text,
         id,
-        status: status === TodoStatusEnum.finished ? TodoStatusEnum.notFinished : TodoStatusEnum.finished
+        status: value
       }
     }))
+  }
+
+  const deleteItem = (id: number): void => {
+    dispatch(deleteTodoItem({id}))
   }
 
   const onReadItemModal = (): void => {
@@ -40,6 +45,7 @@ const TodoItem: FC<ITodoItemComponent> = ({ title, text, status, setOpenModal, i
     <li className="todo-list-item">
       <p onClick={() => onReadItemModal()}>{title}</p>
       <div className="todo-list-item__buttons-container">
+        <Button type="primary" shape="circle" icon={<DeleteOutlined />} onClick={() => deleteItem(id)} />
         <Button
           onClick={() => onEditItemModal()}
           type="primary"
@@ -47,11 +53,15 @@ const TodoItem: FC<ITodoItemComponent> = ({ title, text, status, setOpenModal, i
           icon={<EditOutlined />}
           size="small"
         />
-        <Switch
-          checkedChildren="finished"
-          unCheckedChildren="progress"
-          checked={TodoStatusEnum['finished'] === status}
-          onClick={() => changeStatus()}
+        <Select
+          defaultValue={status}
+          style={{ width: 120 }}
+          onChange={changeStatus}
+          options={[
+            { value: TodoStatusEnum['todo'], label: 'to do' },
+            { value: TodoStatusEnum['finished'], label: 'finished' },
+            { value: TodoStatusEnum['notFinished'], label: 'not finished' },
+          ]}
         />
       </div>
     </li>
